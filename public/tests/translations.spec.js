@@ -13,12 +13,6 @@ describe('translations', function() {
 
 //--------------------------------------------------------------------------------------------------
 
-    it('obligated to be at t.* subdomain', function() {
-        expect(document.location.hostname).toMatch(/^t\..+/);
-    });
-
-//--------------------------------------------------------------------------------------------------
-
     it('delegates reading a translation', function() {
 
         translations({readObject: jasmine.createSpy()}).translate('Cancel');

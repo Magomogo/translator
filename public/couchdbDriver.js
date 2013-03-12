@@ -83,7 +83,7 @@ MuzzyTranslatorCouchDbDriver.prototype.dbInstaller = function (restInterface) {
             document.views[viewName].reduce = reduce.toString();
         }
         restInterface.put(
-            '/couchdb/' + encodeURIComponent(db) + '/_design/' + encodeURIComponent(documentName),
+            'couchdb/' + encodeURIComponent(db) + '/_design/' + encodeURIComponent(documentName),
             document,
             successCallback
         );
@@ -91,14 +91,14 @@ MuzzyTranslatorCouchDbDriver.prototype.dbInstaller = function (restInterface) {
 
     function createUpdateValidator(db) {
         restInterface.put(
-            '/couchdb/' + db + '/_design/auth',
+            'couchdb/' + db + '/_design/auth',
             {validate_doc_update: requireAdminRole.toString()}
         );
     }
 
     return {
         install: function (locale, successCallback) {
-            restInterface.put('/couchdb/' + locale.toLowerCase(), null, function () {
+            restInterface.put('couchdb/' + locale.toLowerCase(), null, function () {
                     createView(
                         locale.toLowerCase(), 'pages', 'all_ids', pageIds, nullReduce
                     );
@@ -129,7 +129,7 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
     }
 
     function createPath(locale, stringKey) {
-        return '/couchdb/' + encodeURIComponent(locale.toLowerCase()) +
+        return 'couchdb/' + encodeURIComponent(locale.toLowerCase()) +
                        '/' + encodeURIComponent(stringKey);
     }
 
@@ -158,7 +158,7 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
         },
 
         deleteTranslations: function (locale) {
-            restInterface.del('/couchdb/' + locale.toLowerCase());
+            restInterface.del('couchdb/' + locale.toLowerCase());
         },
         writeTranslation: function(locale, pageId, key, value, defaultTranslation) {
             var that = this;

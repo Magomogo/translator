@@ -31,7 +31,7 @@ describe('couchdbREST', function() {
 
     it('has access to couchDb server', function() {
         var returnValue;
-        rest.get('/couchdb/', function(data) {returnValue = data;});
+        rest.get('couchdb/', function(data) {returnValue = data;});
         waitsFor(function(){return returnValue !== undefined;}, 'CouchDb server is not responding');
     });
 

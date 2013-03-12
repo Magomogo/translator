@@ -21,12 +21,12 @@ describe('couchdbInstaller', function() {
 
     it('first creates database for defined locale', function() {
         installer.install('ru_RU');
-        expect(collectedPutUri[0]).toEqual('/couchdb/ru_ru')
+        expect(collectedPutUri[0]).toEqual('couchdb/ru_ru')
     });
 
     it('creates views pages all_ids', function() {
         installer.install('ru_RU');
-        var expectedUri = '/couchdb/ru_ru/_design/pages',
+        var expectedUri = 'couchdb/ru_ru/_design/pages',
             collectedData = collectedPutData[collectedPutUri.indexOf(expectedUri)];
 
         expect(collectedPutUri).toContain(expectedUri);
@@ -35,7 +35,7 @@ describe('couchdbInstaller', function() {
 
     it('creates views objects by_page_id', function() {
         installer.install('ru_RU');
-        var expectedUri = '/couchdb/ru_ru/_design/objects',
+        var expectedUri = 'couchdb/ru_ru/_design/objects',
             collectedData = collectedPutData[collectedPutUri.indexOf(expectedUri)];
 
         expect(collectedPutUri).toContain(expectedUri);
@@ -44,7 +44,7 @@ describe('couchdbInstaller', function() {
 
     it('creates update validate callback', function() {
         installer.install('ru_RU');
-        var expectedUri = '/couchdb/ru_ru/_design/auth',
+        var expectedUri = 'couchdb/ru_ru/_design/auth',
             collectedData = collectedPutData[collectedPutUri.indexOf(expectedUri)];
 
         expect(collectedPutUri).toContain(expectedUri);

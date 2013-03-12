@@ -47,7 +47,7 @@ describe('couchdbDriver', function() {
                 'readObject',
                 [locale, '1234567890']
             ).get
-        ).toEqual('/couchdb/de_ch/1234567890');
+        ).toEqual('couchdb/de_ch/1234567890');
     });
 
 //--------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ describe('couchdbDriver', function() {
                 'readPageIds',
                 [locale]
             ).get
-        ).toEqual('/couchdb/de_ch/_design/pages/_view/all_ids?group=true');
+        ).toEqual('couchdb/de_ch/_design/pages/_view/all_ids?group=true');
     });
 
     it ('calls correct view on reading page objects', function() {
@@ -67,7 +67,7 @@ describe('couchdbDriver', function() {
                 'readPageObjects',
                 [locale, pageId]
             ).get
-        ).toEqual('/couchdb/de_ch/_design/objects/_view/by_page_id?key="page/Id"');
+        ).toEqual('couchdb/de_ch/_design/objects/_view/by_page_id?key="page/Id"');
     });
 
 //--------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ describe('couchdbDriver', function() {
                 'deleteTranslations',
                 [locale]
             ).del
-        ).toEqual('/couchdb/de_ch');
+        ).toEqual('couchdb/de_ch');
     });
 
 //--------------------------------------------------------------------------------------------------
@@ -97,8 +97,8 @@ describe('couchdbDriver', function() {
             }
         }).writeTranslation(locale, pageId, 'one', 'eins');
 
-        expect(getUri).toEqual('/couchdb/de_ch/one');
-        expect(putUri).toEqual('/couchdb/de_ch/one');
+        expect(getUri).toEqual('couchdb/de_ch/one');
+        expect(putUri).toEqual('couchdb/de_ch/one');
     });
 
     it ('creates localized string object for new translation', function() {

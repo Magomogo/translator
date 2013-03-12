@@ -32,8 +32,4 @@ describe('publicInterface', function(){
         expect(translate.t.handler.install).toHaveBeenCalledWith({}, ['key2']);
     });
 
-    it('obligated to be at t.* subdomain', function() {
-        expect(document.location.hostname).toMatch(/^t\..+/);
-    });
-
 });
