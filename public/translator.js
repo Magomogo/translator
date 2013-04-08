@@ -1,13 +1,13 @@
 /*global jQuery*/
 
-function MuzzyTranslator(locale, pageId, dbDriver, deps) {
+function MuzzyTranslator(locale, dbDriver, deps) {
     "use strict";
 
     if (undefined === deps) {
         deps = {};
     }
 
-    var di = deps.dialog || this.dialog(jQuery, locale, pageId, dbDriver),
+    var di = deps.dialog || this.dialog(jQuery, locale, dbDriver),
         ks = deps.keysStorage || this.keysStorage(jQuery),
         kf = deps.keysFinder || this.keysFinder(jQuery, ks),
         ha = deps.handler || this.handler(jQuery, di);
@@ -15,7 +15,7 @@ function MuzzyTranslator(locale, pageId, dbDriver, deps) {
     return this.publicInterface(jQuery, di, kf, ks, ha);
 }
 
-MuzzyTranslator.prototype.dialog = function($, locale, pageId, dbDriver) {
+MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
     "use strict";
 
     function iframeInParent() {return $('#translate', parent.document); }
@@ -42,7 +42,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, pageId, dbDriver) {
         return $('<i/>').html(content);
     }
 
-    function readStringObjects(keys, doneCallback) {
+    function readStringObjects(ids, doneCallback) {
         var o = {},
             length = function(o){
                 var count = 0, k;
@@ -51,17 +51,28 @@ MuzzyTranslator.prototype.dialog = function($, locale, pageId, dbDriver) {
             };
 
         $.each(
-            keys,
-            function(i, key) {
-                dbDriver.readObject(locale, key, function(data) {
-                    o[key] = data;
+            ids,
+            function(i, id) {
+                dbDriver.readSingleTranslation(locale, id, function(data) {
+                    o[id] = data;
 
-                    if (length(o) === keys.length) {
-                        doneCallback(o);
+                    if (length(o) === ids.length) {
+                        doneCallback(filterUnknownTranslations(o));
                     }
                 });
             }
         );
+    }
+
+    function filterUnknownTranslations(o) {
+        var filtered = {}, id;
+
+        for (id in o) {
+            if (o.hasOwnProperty(id) && o[id].key) {
+                filtered[id] = o[id];
+            }
+        }
+        return filtered;
     }
 
     function drawDialog(stringObjects, submitCallback) {
@@ -74,7 +85,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, pageId, dbDriver) {
                 iTag(str.key).appendTo(dialogForm());
                 textarea(
                     key,
-                    str.pageTranslations[pageId] || str.defaultTranslation || str.key
+                    str.translation || str.key
                 ).appendTo(dialogForm());
             }
         );
@@ -110,7 +121,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, pageId, dbDriver) {
     function writeTranslations(a) {
         var i;
         for (i=0; i < a.length; i++) {
-            dbDriver.writeTranslation(locale, pageId, a[i].name, a[i].value);
+            dbDriver.updateSingleTranslation(locale, a[i].name, a[i].value);
         }
     }
 

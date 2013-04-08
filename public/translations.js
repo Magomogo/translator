@@ -1,32 +1,29 @@
-function MuzzyTranslations(locale, pageId, dbDriver) {
+function MuzzyTranslations(locale, dbDriver) {
     "use strict";
 
-    function translate(key, o) {
-        if (undefined === o) {
-            o = {defaultTranslation: undefined, pageTranslations: {}};
+    var translations;
+
+    dbDriver.readTranslations(locale, '', function(arr) {
+        var i;
+        translations={};
+        for(i=0; i< arr.length; i++) {
+            if (translations[arr[i].namespace.join('/')] === undefined) {
+                translations[arr[i].namespace.join('/')] = {};
+            }
+
+            translations[arr[i].namespace.join('/')][arr[i].key] = arr[i].translation;
         }
-        return o.pageTranslations[pageId] || o.defaultTranslation || key;
-    }
+    });
 
     return {
-        translate: function(key, successCallback) {
-            dbDriver.readObject(locale, key, function(o) {
-                if (successCallback) successCallback(
-                    translate(key, o)
-                );
-            });
-        },
-        all: function(successCallback) {
-            dbDriver.readPageObjects(locale, pageId, function(arr) {
-                if (successCallback) {
-                    var keyToTranslationMap={}, i;
-                    for(i=0; i< arr.length; i++) {
-                        keyToTranslationMap[arr[i].key] = translate(arr[i].key, arr[i]);
-                    }
+        translate: function(keyWithNamespace) {
+            if (keyWithNamespace.indexOf(':') === -1) {
+                keyWithNamespace = ':' + keyWithNamespace;
+            }
+            var namespace = keyWithNamespace.split(':')[0],
+                key = keyWithNamespace.split(':')[1];
 
-                    successCallback(keyToTranslationMap);
-                }
-            });
+            return (translations[namespace] || {key : key})[key] || key;
         }
     };
 }

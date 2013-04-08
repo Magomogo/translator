@@ -1,90 +1,61 @@
 describe('translations', function() {
 
     var dbDriverStub,
-        localizedStringObject = {
-            defaultTranslation: 'Eins',
-            pageTranslations: {index : 'eins.', form : 'eine'}
+        localizedStringObject =  {
+            key: 'one',
+            translation: 'Eins',
+            namespace: ['math', 'numbers']
         };
 
-    function translations(driverStub, pageId) {
+    function translations(driverStub) {
         dbDriverStub = driverStub;
-        return new MuzzyTranslations('de_CH', pageId || 'index/index', driverStub);
+        return new MuzzyTranslations('de_CH', driverStub);
     }
 
 //--------------------------------------------------------------------------------------------------
 
-    it('delegates reading a translation', function() {
+    it('reads all translations on creating', function() {
 
-        translations({readObject: jasmine.createSpy()}).translate('Cancel');
+        translations({readTranslations: jasmine.createSpy()});
 
-        expect(dbDriverStub.readObject)
-                .toHaveBeenCalledWith('de_CH', 'Cancel', jasmine.any(Function));
+        expect(dbDriverStub.readTranslations)
+                .toHaveBeenCalledWith('de_CH', '', jasmine.any(Function));
     });
 
-    it('returns global translation value for unlisted pageId', function() {
+    it('translates a global key', function() {
         var result;
 
-        translations({
-            readObject: function(locale, key, successCallback){
-                successCallback(localizedStringObject);
+        result = translations({
+            readTranslations: function(locale, ns, successCallback){
+                successCallback([{key: 'one', 'translation': 'Eins', namespace: []}]);
             }
-        }).translate('foo', function(t) { result = t; });
+        }).translate('one');
 
         expect(result).toEqual('Eins');
     });
 
-    it('returns translation key for not existing translation', function() {
+    it('translates a namespaced key', function() {
         var result;
 
-        translations({
-            readObject: function(locale, key, successCallback){
-                successCallback({defaultTranslation:null, pageTranslations: {}});
+        result = translations({
+            readTranslations: function(locale, ns, successCallback){
+                successCallback([{key: 'one', 'translation': 'Eins', namespace: ['math', 'numbers']}]);
             }
-        }).translate('foo', function(t) { result = t; });
+        }).translate('math/numbers:one');
 
-        expect(result).toEqual('foo');
+        expect(result).toEqual('Eins');
     });
 
-    it('returns local page translation of defined', function() {
+    it('returns passed key when no translation exists', function(){
         var result;
 
-        translations(
-            {
-                readObject: function(locale, key, successCallback){
-                    successCallback(localizedStringObject);
-                }
-            },
-            'form'
-        ).translate('foo', function(t) { result = t; });
-
-        expect(result).toEqual('eine');
-    });
-
-//--------------------------------------------------------------------------------------------------
-
-    it('delegates reading of translations of a page', function() {
-        translations({readPageObjects: jasmine.createSpy()}).all();
-
-        expect(dbDriverStub.readPageObjects)
-            .toHaveBeenCalledWith('de_CH', 'index/index', jasmine.any(Function));
-    });
-
-    it('creates key-value map of page translations', function() {
-        var result,
-            arrayOfRecordsFromDb = [
-                {key:'123', defaultTranslation:'glob', pageTranslations:{}},
-                {key:'456', defaultTranslation:'glob2', pageTranslations:{'index/index': 'loc'}}
-            ];
-
-        translations({
-            readPageObjects: function(locale, key, successCallback){
-                successCallback(arrayOfRecordsFromDb);
+        result = translations({
+            readTranslations: function(locale, ns, successCallback){
+                successCallback([]);
             }
-        }).all(function(o) { result = o; });
+        }).translate('some/namespace:notExisting');
 
-        expect(result).toEqual({
-            '123': 'glob',
-            '456': 'loc'
-        });
-    })
+        expect(result).toEqual('notExisting');
+    });
+
 });

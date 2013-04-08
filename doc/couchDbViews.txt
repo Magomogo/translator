@@ -1,29 +1,36 @@
-1. Query all translations of a page
+1. Query all translations of a namespace
 
 Map:
 
-function(doc) {
-  if (doc.pageTranslations) {
-    for (pageId in doc.pageTranslations) {
-      var str = {key:doc._id, translation: doc.pageTranslations[pageId] || doc.defaultTranslation};
-      emit(pageId, str);
+function (doc) {
+    var i, combinedNs;
+    if (doc.namespace) {
+        combinedNs = '';
+        for (i = 0; i < doc.namespace.length; i++) {
+            combinedNs = combinedNs + doc.namespace[i];
+            emit(combinedNs, doc);
+            combinedNs = combinedNs + '/'
+        }
     }
-  }
 }
 
 Query:
-{locale}/_design/strings/_view/by_page_id?key="{pageId}"
+{locale}/_design/strings/_view/by_namespace?key="{namespace}"
 
-2. All page Ids of database
+2. All namespaces of database
 
 Map:
 
-function(doc) {
-  if (doc.pageTranslations) {
-    for (pageId in doc.pageTranslations) {
-      emit(pageId, null);
+function (doc) {
+    var i, combinedNs;
+    if (doc.namespace) {
+        combinedNs = '';
+        for (i = 0; i < doc.namespace.length; i++) {
+            combinedNs = combinedNs + doc.namespace[i];
+            emit(combinedNs, null);
+            combinedNs = combinedNs + '/'
+        }
     }
-  }
 }
 
 Reduce:
@@ -35,16 +42,3 @@ function(keys, values) {
 Query:
 
 {locale}/_design/pages/_view/all_ids?group=true
-
-3. All page objects
-
-function(doc) {
-  if (doc.pageTranslations) {
-    for (pageId in doc.pageTranslations) {
-      emit(pageId, doc);
-    }
-  }
-}
-
-Query:
-{locale}/_design/objects/_view/by_page_id?key="{pageId}"

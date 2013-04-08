@@ -15,7 +15,7 @@ describe('keysStorage', function() {
 //--------------------------------------------------------------------------------------------------
 
     beforeEach(function() {
-        storage = new MuzzyTranslator('de', '/').t.keysStorage;
+        storage = new MuzzyTranslator('de').t.keysStorage;
     });
 
     afterEach(function() {

@@ -7,10 +7,9 @@ function MuzzyTranslatorCouchDbDriver(deps) {
         deps = {};
     }
 
-    var ri = deps.restInterface || this.restInterface(jQuery),
-        di = deps.dbInstaller || this.dbInstaller(ri);
+    var ri = deps.restInterface || this.restInterface(jQuery);
 
-    return this.translateInterface(jQuery, ri, di);
+    return this.translateInterface(jQuery, ri);
 }
 
 MuzzyTranslatorCouchDbDriver.prototype.restInterface = function ($) {
@@ -40,110 +39,30 @@ MuzzyTranslatorCouchDbDriver.prototype.restInterface = function ($) {
     };
 };
 
-MuzzyTranslatorCouchDbDriver.prototype.dbInstaller = function (restInterface) {
-    "use strict";
-    function emit(a, b) {} // satisfy jsHint
-
-    var pageIds = function (doc) {
-            var pageId;
-            if (doc.pageTranslations) {
-                for (pageId in doc.pageTranslations) {
-                    if (doc.pageTranslations.hasOwnProperty(pageId)) {
-                        emit(pageId, null);
-                    }
-                }
-            }
-        },
-        nullReduce = function (keys, values) {
-            return null;
-        },
-        objectsByPageId = function (doc) {
-            var pageId;
-            if (doc.pageTranslations) {
-                for (pageId in doc.pageTranslations) {
-                    if (doc.pageTranslations.hasOwnProperty(pageId)) {
-                        emit(pageId, doc);
-                    }
-                }
-            }
-        },
-        requireAdminRole = function (newDoc, oldDoc, userCtx, secObj) {
-            if (userCtx.roles.indexOf('_admin') === -1) {
-                throw ({unauthorized: "forbidden"});
-            }
-        };
-
-    function createView(db, documentName, viewName, map, reduce, successCallback) {
-        var document = {
-            language: 'javascript',
-            views: {}
-        };
-        document.views[viewName] = {map: map.toString()};
-        if (reduce) {
-            document.views[viewName].reduce = reduce.toString();
-        }
-        restInterface.put(
-            'couchdb/' + encodeURIComponent(db) + '/_design/' + encodeURIComponent(documentName),
-            document,
-            successCallback
-        );
-    }
-
-    function createUpdateValidator(db) {
-        restInterface.put(
-            'couchdb/' + db + '/_design/auth',
-            {validate_doc_update: requireAdminRole.toString()}
-        );
-    }
-
-    return {
-        install: function (locale, successCallback) {
-            restInterface.put('couchdb/' + locale.toLowerCase(), null, function () {
-                    createView(
-                        locale.toLowerCase(), 'pages', 'all_ids', pageIds, nullReduce
-                    );
-                    createView(
-                        locale.toLowerCase(), 'objects', 'by_page_id', objectsByPageId
-                    );
-                    createUpdateValidator(locale.toLowerCase());
-                    if (successCallback) {
-                        successCallback();
-                    }
-                }
-            );
-        }
-    };
-};
-
-MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInterface, dbInstaller){
+MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInterface){
     "use strict";
 
     function localizedstringStringSchema(data){
         return $.extend(
             data,
             {
-                defaultTranslation: data.defaultTranslation || null ,
-                pageTranslations: data.pageTranslations || {}
+                key: data.key || '' ,
+                translation: data.translation || null ,
+                namespace: data.namespace || []
             }
         );
     }
 
-    function createPath(locale, stringKey) {
+    function createPath(locale, id) {
         return 'couchdb/' + encodeURIComponent(locale.toLowerCase()) +
-                       '/' + encodeURIComponent(stringKey);
+                       '/' + encodeURIComponent(id);
     }
 
-    function readLocalizedStringObject(locale, key, successCallback) {
+    function readLocalizedStringObject(locale, id, successCallback) {
         restInterface.get(
-            createPath(locale, key),
+            createPath(locale, id),
             function(data) {
-                var str = localizedstringStringSchema(data), pageId;
-                for (pageId in str.pageTranslations) {
-                    if (str.pageTranslations[pageId] == str.defaultTranslation) {
-                        str.pageTranslations[pageId] = null;
-                    }
-                }
-                successCallback(str);
+                successCallback(localizedstringStringSchema(data));
             },
             function(){
                 successCallback(localizedstringStringSchema({}));
@@ -153,60 +72,46 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
 
     return {
         t: {
-            restInterface: restInterface,
-            dbInstaller: dbInstaller
+            restInterface: restInterface
         },
 
         deleteTranslations: function (locale) {
             restInterface.del('couchdb/' + locale.toLowerCase());
         },
-        writeTranslation: function(locale, pageId, key, value, defaultTranslation) {
-            var that = this;
-            readLocalizedStringObject(locale, key, function(str){
-                str.defaultTranslation = defaultTranslation || str.defaultTranslation || value;
-                str.pageTranslations[pageId] = (value === str.defaultTranslation ? null : value);
-                restInterface.put(
-                    createPath(locale, key),
-                    str,
-                    null,
-                    function(xhr) {
-                        if(xhr.responseText.match(/no_db_file/)) {
-                            dbInstaller.install(locale, function() {
-                                 that.writeTranslation(locale, pageId, key, value, defaultTranslation);
-                            });
-                        }
-                    }
-                );
+        updateSingleTranslation: function(locale, id, translation) {
+            readLocalizedStringObject(locale, id, function(str){
+                str.translation = translation;
+                restInterface.put(createPath(locale, id), str);
             });
         },
-        readPageIds: function(locale, successCallback) {
+        readNamespaces: function(locale, successCallback) {
             restInterface.get(
-                createPath(locale, '_design') + '/pages/_view/all_ids?group=true',
+                createPath(locale, '_design') + '/main/_view/all_namespaces?group=true',
                 function(data) {
-                    var pageIds=[], i;
+                    var namespaces=[], i;
                     for(i=0; i< data.rows.length; i++) {
-                        pageIds.push(data.rows[i].key);
+                        namespaces.push(data.rows[i].key);
                     }
-                    if (successCallback) successCallback(pageIds);
+                    if (successCallback) successCallback(namespaces);
                 }
             );
         },
-        readPageObjects: function(locale, pageId, successCallback) {
+        readTranslations: function(locale, namespace, successCallback) {
             restInterface.get(
-                createPath(locale, '_design') + '/objects/_view/by_page_id?key="' + pageId + '"',
+                createPath(locale, '_design') + '/main/_view/by_namespace?key="' + (namespace || '') + '"',
                 function(data) {
                     var objects=[], i, o;
                     for(i=0; i< data.rows.length; i++) {
                         o = localizedstringStringSchema(data.rows[i].value);
-                        o.key = data.rows[i].id;
+                        o.id = data.rows[i].id;
                         objects.push(o);
                     }
                     if (successCallback) successCallback(objects);
                 }
             );
         },
-        readObject: function(locale, key, successCallback) {
-            readLocalizedStringObject(locale, key, successCallback);
+        readSingleTranslation: function(locale, id, successCallback) {
+            readLocalizedStringObject(locale, id, successCallback);
         }
     };
 };

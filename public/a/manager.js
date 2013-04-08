@@ -24,7 +24,7 @@ function MuzzyTranslationsManager(locale, dbDriver) {
                 $('<input/>')
                     .attr({type: 'button', value: 'save'}).css({display: 'none'})
                     .bind('click', function () {
-                        dbDriver.writeTranslation(locale, pageId, id, $(this).siblings('textarea').val());
+                        dbDriver.updateSingleTranslation(locale, pageId, id, $(this).siblings('textarea').val());
                         $(this).hide();
                     })
             ).append(
@@ -32,7 +32,7 @@ function MuzzyTranslationsManager(locale, dbDriver) {
                     .attr({type: 'button', value: 'save as global'}).css({display: 'none'})
                     .bind('click', function () {
                         var newGlobalValue = $(this).siblings('textarea').val();
-                        dbDriver.writeTranslation(locale, pageId, id, newGlobalValue, newGlobalValue);
+                        dbDriver.updateSingleTranslation(locale, pageId, id, newGlobalValue, newGlobalValue);
                         $(this).hide();
                         $(this).parents('dl').empty().append(
                             stringControl(pageId, id, newGlobalValue, newGlobalValue)
@@ -45,7 +45,7 @@ function MuzzyTranslationsManager(locale, dbDriver) {
     return {
         loadPageList: function ($el, $translationsContainer) {
             var manager = this;
-            dbDriver.readPageIds(
+            dbDriver.readNamespaces(
                 locale,
                 function (data) {
                     var i;
@@ -63,7 +63,7 @@ function MuzzyTranslationsManager(locale, dbDriver) {
         },
         translationsList: function (pageId, c) {
             var ul = $('<ul/>').appendTo(c.empty());
-            dbDriver.readPageObjects(locale, pageId, function (data) {
+            dbDriver.readTranslations(locale, pageId, function (data) {
                 var i;
                 for (i = 0; i < data.length; i++) {
                     ul.append(

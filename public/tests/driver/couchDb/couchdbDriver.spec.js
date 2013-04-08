@@ -1,16 +1,16 @@
 describe('couchdbDriver', function() {
 
     var locale = 'de_CH',
-        pageId = 'page/Id',
+        namespace = 'math',
         localizedStringObject = {
-            defaultTranslation: 'Eins',
-            pageTranslations: {index : 'eins.', form : 'eine'}
+            key: 'one',
+            translation: 'Eins',
+            namespace: ['math', 'numbers']
         };
 
-    function mockedDriver(restMock, installerMock) {
+    function mockedDriver(restMock) {
         return new MuzzyTranslatorCouchDbDriver({
-            restInterface: restMock,
-            dbInstaller: installerMock
+            restInterface: restMock
         });
     }
 
@@ -44,7 +44,7 @@ describe('couchdbDriver', function() {
     it('queries correct URI on reading translation object', function() {
         expect(
             callDriverMethodAndCatchRestUri(
-                'readObject',
+                'readSingleTranslation',
                 [locale, '1234567890']
             ).get
         ).toEqual('couchdb/de_ch/1234567890');
@@ -55,19 +55,19 @@ describe('couchdbDriver', function() {
     it ('calls correct view on reading page ids', function() {
         expect(
             callDriverMethodAndCatchRestUri(
-                'readPageIds',
+                'readNamespaces',
                 [locale]
             ).get
-        ).toEqual('couchdb/de_ch/_design/pages/_view/all_ids?group=true');
+        ).toEqual('couchdb/de_ch/_design/main/_view/all_namespaces?group=true');
     });
 
     it ('calls correct view on reading page objects', function() {
         expect(
             callDriverMethodAndCatchRestUri(
-                'readPageObjects',
-                [locale, pageId]
+                'readTranslations',
+                [locale, namespace]
             ).get
-        ).toEqual('couchdb/de_ch/_design/objects/_view/by_page_id?key="page/Id"');
+        ).toEqual('couchdb/de_ch/_design/main/_view/by_namespace?key="math"');
     });
 
 //--------------------------------------------------------------------------------------------------
@@ -95,48 +95,10 @@ describe('couchdbDriver', function() {
             put: function(uri, data){
                 putUri = uri;
             }
-        }).writeTranslation(locale, pageId, 'one', 'eins');
+        }).updateSingleTranslation(locale, 'e242ff', 'eins');
 
-        expect(getUri).toEqual('couchdb/de_ch/one');
-        expect(putUri).toEqual('couchdb/de_ch/one');
-    });
-
-    it ('creates localized string object for new translation', function() {
-        var putUri, putData;
-
-        mockedDriver({
-            get: function(uri, successCallback, notFoundCallback){
-                notFoundCallback();
-            },
-            put: function(uri, data){
-                putUri = uri;
-                putData = data;
-            }
-        }).writeTranslation(locale, pageId, 'one', 'eins');
-
-        expect(putUri).toContain('/de_ch/one');
-        expect(putData).toEqual({defaultTranslation: 'eins' , pageTranslations: {'page/Id': null}});
-    });
-
-    it ('can create database for a locale', function() {
-
-        var installerSpy = jasmine.createSpy('install');
-
-        mockedDriver(
-            {
-                get: function(url, successCallback, notFoundCallback) {
-                    notFoundCallback();
-                },
-                put: function(url, data, successCallback, notFoundCallback) {
-                    notFoundCallback({responseText: '"no_db_file"'});
-                }
-            },
-            { install: installerSpy }
-        )
-            .writeTranslation(locale, pageId, 'one', 'eins');
-
-        expect(installerSpy).toHaveBeenCalledWith('de_CH', jasmine.any(Function));
-
+        expect(getUri).toEqual('couchdb/de_ch/e242ff');
+        expect(putUri).toEqual('couchdb/de_ch/e242ff');
     });
 
 //--------------------------------------------------------------------------------------------------
@@ -147,7 +109,7 @@ describe('couchdbDriver', function() {
             get: function(url, successCallback){
                 successCallback({rows:[]});
             }
-        }).readPageIds(locale, spy);
+        }).readNamespaces(locale, spy);
         expect(spy).toHaveBeenCalled();
     });
 
@@ -157,7 +119,7 @@ describe('couchdbDriver', function() {
             get: function(url, successCallback){
                 successCallback({rows:[]});
             }
-        }).readPageObjects(locale, pageId, spy);
+        }).readTranslations(locale, namespace, spy);
         expect(spy).toHaveBeenCalled();
     });
 

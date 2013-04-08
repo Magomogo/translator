@@ -24,7 +24,7 @@ describe('keysFinder', function() {
             keysStorageMock = {
                 register: function(parent, key){result.push(key);}
             },
-            finder = new MuzzyTranslator('de', '/', {}, {keysStorage: keysStorageMock}).t.keysFinder;
+            finder = new MuzzyTranslator('de', {}, {keysStorage: keysStorageMock}).t.keysFinder;
 
         jQuery('*', dom).each(
             function(){
@@ -41,7 +41,7 @@ describe('keysFinder', function() {
             register: jasmine.createSpy()
         };
 
-        (new MuzzyTranslator('de', '/', {}, {keysStorage: storageMock})).t.keysFinder.testElement(
+        (new MuzzyTranslator('de', {}, {keysStorage: storageMock})).t.keysFinder.testElement(
             domElement(tPair())
         );
 
@@ -78,7 +78,7 @@ describe('keysFinder', function() {
 
     it('removes translation markUp from attributes', function() {
         var el = domElement('<img alt="' + tPair() + '" title="' + tPair() + '">'),
-            finder = new MuzzyTranslator('de', '/').t.keysFinder;
+            finder = new MuzzyTranslator('de').t.keysFinder;
 
         jQuery('*', el).each(
             function(){

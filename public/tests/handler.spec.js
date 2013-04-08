@@ -28,7 +28,7 @@ describe('handler', function() {
         var dialogStub = {
                 popUp: jasmine.createSpy()
             },
-            handler = new MuzzyTranslator('de', '/', {}, {dialog: dialogStub}).t.handler;
+            handler = new MuzzyTranslator('de', {}, {dialog: dialogStub}).t.handler;
 
         handler.install(anchor, ['12345']);
 

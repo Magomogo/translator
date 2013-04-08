@@ -1,7 +1,7 @@
 describe('publicInterface', function(){
 
     it('finds translation pairs', function() {
-        var translate = new MuzzyTranslator('de', '/');
+        var translate = new MuzzyTranslator('de');
         spyOn(translate.t.keysFinder, 'testElement');
 
         translate.bindEvents();
@@ -10,7 +10,7 @@ describe('publicInterface', function(){
     });
 
     it('removes special mark up', function() {
-        var translate = new MuzzyTranslator('de', '/');
+        var translate = new MuzzyTranslator('de');
         spyOn(translate.t.keysFinder, 'removeMarkUp');
 
         translate.bindEvents();
@@ -19,7 +19,7 @@ describe('publicInterface', function(){
     });
 
     it('attaches handlers per every key', function() {
-        var translate = new MuzzyTranslator('de', '/');
+        var translate = new MuzzyTranslator('de');
         translate.t.keysStorage = {
             keys: [{anchor:{}, keys:['key1']}, {anchor:{}, keys:['key2']}]
         };

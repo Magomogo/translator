@@ -8,8 +8,8 @@
 <script type="text/javascript" src="translator.js"></script>
 
 <script>
-function initTranslation (locale, pageId) {
-    var mt = new MuzzyTranslator(locale, pageId, new MuzzyTranslatorCouchDbDriver());
+function initTranslation (locale) {
+    var mt = new MuzzyTranslator(locale, new MuzzyTranslatorCouchDbDriver());
     jQuery(document).ready(
         function () {
             mt.bindEvents();
