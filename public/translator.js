@@ -52,7 +52,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
                 dbDriver.readSingleTranslation(locale, id, function(data) {
                     o[id] = data;
 
-                    if (Object.keys(o).length === ids.length) {
+                    if ($.map(o, function () { return 1;}).length === ids.length) {
                         doneCallback(filterUnknownTranslations(o));
                     }
                 });
@@ -150,7 +150,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
         popUp : function (keys) {
             var translate = this;
             this.t.readStringObjects(keys, function(o){
-                if (Object.keys(o).length) {
+                if ($.map(o, function () { return 1;}).length) {
                     drawDialog(o, translate.t.writeTranslations);
                 } else {
                     drawNotice();
