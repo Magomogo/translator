@@ -1,0 +1,22 @@
+<html>
+<head>
+<script type="text/javascript" src="r/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="couchdbDriver.js"></script>
+<script type="text/javascript" src="a/manager.js"></script>
+<link rel="stylesheet" type="text/css" href="a/manager.css">
+<script>
+    $(document).ready(function() {
+        (new MuzzyTranslationsManager('ru_ru', new MuzzyTranslatorCouchDbDriver()))
+                .loadPageList($('#namespace'), $('#pageTranslations'));
+    })
+</script>
+</head>
+<body>
+<h1>Management</h1>
+<dl>
+    <dt>Page list</dt>
+    <dd><select id="namespace"></select></dd>
+</dl>
+<div id="pageTranslations"></div>
+</body>
+</html>

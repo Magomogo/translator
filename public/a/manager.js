@@ -9,14 +9,14 @@ function MuzzyTranslationsManager(locale, dbDriver) {
         return $('<option/>').attr({value: value}).append(displayed);
     }
 
-    function stringControl(pageId, id, globalValue, pageValue) {
+    function stringControl(id, translation) {
         return $('<dl/>').append(
-            $('<dt/>').append(globalValue)
+            $('<dt/>').append(translation)
         ).append(
             $('<dd/>').append(
                 $('<textarea/>')
                     .attr({name: id})
-                    .html(pageValue)
+                    .html(translation)
                     .bind('keydown', function () {
                         $(this).siblings('input').show();
                     })
@@ -24,19 +24,8 @@ function MuzzyTranslationsManager(locale, dbDriver) {
                 $('<input/>')
                     .attr({type: 'button', value: 'save'}).css({display: 'none'})
                     .bind('click', function () {
-                        dbDriver.updateSingleTranslation(locale, pageId, id, $(this).siblings('textarea').val());
+                        dbDriver.updateSingleTranslation(locale, id, $(this).siblings('textarea').val());
                         $(this).hide();
-                    })
-            ).append(
-                $('<input/>')
-                    .attr({type: 'button', value: 'save as global'}).css({display: 'none'})
-                    .bind('click', function () {
-                        var newGlobalValue = $(this).siblings('textarea').val();
-                        dbDriver.updateSingleTranslation(locale, pageId, id, newGlobalValue, newGlobalValue);
-                        $(this).hide();
-                        $(this).parents('dl').empty().append(
-                            stringControl(pageId, id, newGlobalValue, newGlobalValue)
-                        );
                     })
             )
         );
@@ -54,24 +43,20 @@ function MuzzyTranslationsManager(locale, dbDriver) {
                         $el.append(optionEl(data[i], data[i]));
                     }
                     $el.bind('change', function () {
-                        if (this.value) {
-                            manager.translationsList(this.value, $translationsContainer);
-                        }
+                        manager.translationsList(this.value, $translationsContainer);
                     });
                 }
             );
         },
-        translationsList: function (pageId, c) {
+        translationsList: function (namespace, c) {
             var ul = $('<ul/>').appendTo(c.empty());
-            dbDriver.readTranslations(locale, pageId, function (data) {
+            dbDriver.readTranslations(locale, namespace, function (data) {
                 var i;
                 for (i = 0; i < data.length; i++) {
                     ul.append(
                         stringControl(
-                            pageId,
-                            data[i].key,
-                            data[i].defaultTranslation,
-                            data[i].pageTranslations[pageId] || data[i].defaultTranslation
+                            data[i].id,
+                            data[i].translation
                         )
                     );
                 }
