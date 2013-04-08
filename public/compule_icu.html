@@ -1,0 +1,42 @@
+<html>
+<head>
+    <script type="text/javascript" src="r/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="couchdbDriver.js"></script>
+    <script type="text/javascript" src="r/messageformat/messageformat.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ru.js"></script>
+    <script>
+        var mf = new MessageFormat('ru'), db = new MuzzyTranslatorCouchDbDriver();
+
+        db.readTranslations('ru_ru', '', function(o) {
+            var i, string, js = '', declaredNamespaces = {};
+
+            for (i = 0; i < o.length; i++) {
+                string = o[i];
+
+                if (string.namespace.length && !declaredNamespaces[string.namespace.join('/')]) {
+                    js = js + 'g.i18n[\'' + string.namespace.join('/') + '\'] = {};\n';
+                    declaredNamespaces[string.namespace.join('/')] = 1;
+                }
+
+                js = js + 'g.i18n';
+
+                if (string.namespace.length) {
+
+                    js = js + '[\'' + string.namespace.join('/') + '\']';
+                }
+                js = js + '[\'' + string.key + '\'] = '
+                        + mf.precompile(mf.parse(string.translation))
+                        + ';\n';
+            }
+
+            js = '(function(g){' + 'g.i18n = {};\n' + js + '})(window);';
+
+            $('#result').val(js);
+        });
+    </script>
+</head>
+<body>
+<h1>ICU file compulation</h1>
+<textarea id="result" style="width:100%;height:100%"></textarea>
+</body>
+</html>
