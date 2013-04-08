@@ -20,6 +20,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
 
     function iframeInParent() {return $('#translate', parent.document); }
     function dialogContainer() {return $('#translateDialogContainer'); }
+    function unknownTranslationNotice() {return $('#unknownTranslationNotice'); }
     function dialogForm() {return $('#translateDialogContainer form'); }
 
     function raiseIframe() {
@@ -43,12 +44,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
     }
 
     function readStringObjects(ids, doneCallback) {
-        var o = {},
-            length = function(o){
-                var count = 0, k;
-                for (k in o) if (o.hasOwnProperty(k)) count++;
-                return count;
-            };
+        var o = {};
 
         $.each(
             ids,
@@ -56,7 +52,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
                 dbDriver.readSingleTranslation(locale, id, function(data) {
                     o[id] = data;
 
-                    if (length(o) === ids.length) {
+                    if (Object.keys(o).length === ids.length) {
                         doneCallback(filterUnknownTranslations(o));
                     }
                 });
@@ -73,6 +69,26 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
             }
         }
         return filtered;
+    }
+
+    function drawNotice() {
+        raiseIframe();
+        dialogForm().empty();
+        unknownTranslationNotice().dialog({
+            title: 'Unknown translation',
+            autoOpen: true,
+            width: 600,
+            close: function () {
+                iframeInParent().hide();
+            },
+            position: ['center', $(parent.window).scrollTop() + $(parent.window).outerHeight() / 4],
+            buttons: {
+                "Close": function () {
+                    $(this).dialog("close");
+                }
+            }
+
+        });
     }
 
     function drawDialog(stringObjects, submitCallback) {
@@ -134,7 +150,11 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
         popUp : function (keys) {
             var translate = this;
             this.t.readStringObjects(keys, function(o){
-                drawDialog(o, translate.t.writeTranslations);
+                if (Object.keys(o).length) {
+                    drawDialog(o, translate.t.writeTranslations);
+                } else {
+                    drawNotice();
+                }
             });
         }
     };
