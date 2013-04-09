@@ -9,9 +9,9 @@ function MuzzyTranslationsManager(locale, dbDriver) {
         return $('<option/>').attr({value: value}).append(displayed);
     }
 
-    function stringControl(id, translation) {
+    function stringControl(id, key, translation) {
         return $('<dl/>').append(
-            $('<dt/>').append(translation)
+            $('<dt/>').append(key)
         ).append(
             $('<dd/>').append(
                 $('<textarea/>')
@@ -56,6 +56,7 @@ function MuzzyTranslationsManager(locale, dbDriver) {
                     ul.append(
                         stringControl(
                             data[i].id,
+                            data[i].key,
                             data[i].translation
                         )
                     );
