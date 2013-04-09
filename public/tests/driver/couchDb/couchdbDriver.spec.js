@@ -123,4 +123,25 @@ describe('couchdbDriver', function() {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('lists all locales stored in the database using regular expression', function(){
+        var locales;
+
+        runs(function() {
+            mockedDriver({
+                get: function(url, successCallback){
+                    successCallback(["_users","ru_ru","i18n_test","ru","ttt"]);
+                }
+            }).listLocales(function(l) {
+                locales = l;
+            });
+        });
+
+        waitsFor(function() {
+            return locales;
+        });
+
+        runs(function() {
+            expect(locales).toEqual(['ru_ru']);
+        })
+    });
 });

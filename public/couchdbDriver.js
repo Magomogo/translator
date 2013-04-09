@@ -112,6 +112,17 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
         },
         readSingleTranslation: function(locale, id, successCallback) {
             readLocalizedStringObject(locale, id, successCallback);
+        },
+        listLocales: function(successCallback) {
+            restInterface.get('couchdb/_all_dbs', function(data) {
+                var i, locales = [];
+                for (i=0; i < data.length; i++) {
+                    if (data[i].match(/^[a-z]{2}_[a-z]{2}$/)) {
+                        locales.push(data[i]);
+                    }
+                }
+                successCallback(locales);
+            });
         }
     };
 };

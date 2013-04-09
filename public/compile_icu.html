@@ -1,0 +1,89 @@
+<html>
+<head>
+    <script type="text/javascript" src="r/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="couchdbDriver.js"></script>
+    <script type="text/javascript" src="r/messageformat/messageformat.js"></script>
+
+    <script type="text/javascript" src="r/messageformat/locale/af.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/am.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ar.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/bg.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/bn.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/br.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ca.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/cs.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/cy.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/da.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/de.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/el.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/en.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/es.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/et.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/eu.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/fa.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/fi.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/fr.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ga.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/gl.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/gu.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/he.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/hi.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/hr.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/hu.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/id.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/in.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/is.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/it.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/iw.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ja.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/kn.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ko.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ln.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/lt.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/lv.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/mk.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ml.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/mo.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/mr.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ms.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/mt.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/nl.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/no.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/or.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/pl.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/pt.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ro.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ru.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/sk.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/sl.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/sq.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/sr.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/sv.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/sw.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ta.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/te.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/th.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/tl.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/tr.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/uk.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/ur.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/vi.js"></script>
+    <script type="text/javascript" src="r/messageformat/locale/zh.js"></script>
+
+    <script type="text/javascript" src="icuCompilerInterface.js"></script>
+    <script>
+        var compileInterface = new ICUCompilerInterface(
+                jQuery, new MuzzyTranslatorCouchDbDriver()
+        );
+
+        compileInterface.fillLocalesSelectbox();
+        compileInterface.compileResult('ru_ru', new MessageFormat('ru'));
+
+    </script>
+</head>
+<body>
+<h1>ICU file compulation</h1>
+<select id="localeSelector"></select>
+<textarea id="result" style="width:100%;height:100%"></textarea>
+</body>
+</html>
