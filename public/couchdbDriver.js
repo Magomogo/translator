@@ -98,7 +98,7 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
         },
         readTranslations: function(locale, namespace, successCallback) {
             restInterface.get(
-                createPath(locale, '_design') + '/main/_view/by_namespace?key="' + (namespace || '') + '"',
+                createPath(locale, '_design') + '/main/_view/translations?key="' + (namespace || '') + '"',
                 function(data) {
                     var objects=[], i, o;
                     for(i=0; i< data.rows.length; i++) {

@@ -67,7 +67,7 @@ describe('couchdbDriver', function() {
                 'readTranslations',
                 [locale, namespace]
             ).get
-        ).toEqual('couchdb/de_ch/_design/main/_view/by_namespace?key="math"');
+        ).toEqual('couchdb/de_ch/_design/main/_view/translations?key="math"');
     });
 
 //--------------------------------------------------------------------------------------------------
