@@ -78,9 +78,12 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
         deleteTranslations: function (locale) {
             restInterface.del('couchdb/' + locale.toLowerCase());
         },
-        updateSingleTranslation: function(locale, id, translation) {
+        updateSingleTranslation: function(locale, id, translation, description) {
             readLocalizedStringObject(locale, id, function(str){
                 str.translation = translation;
+                if (description) {
+                    str.description = description;
+                }
                 restInterface.put(createPath(locale, id), str);
             });
         },

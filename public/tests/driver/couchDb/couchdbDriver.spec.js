@@ -144,4 +144,24 @@ describe('couchdbDriver', function() {
             expect(locales).toEqual(['ru_ru']);
         })
     });
+
+    it('writes string description into database', function() {
+        var actualData = {};
+        mockedDriver({
+            get: function(uri, successCallback){
+                successCallback(localizedStringObject);
+            },
+            put: function(uri, data){
+                actualData = data;
+            }
+        }).updateSingleTranslation(locale, 'e242ff', 'eins', 'A number');
+
+        expect(actualData).toEqual({
+            key: 'one',
+            translation: 'eins',
+            description: 'A number',
+            namespace: ['math', 'numbers']
+        })
+
+    });
 });

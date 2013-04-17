@@ -98,10 +98,15 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
         $.each(
             stringObjects,
             function (key, str) {
-                iTag(str.key).appendTo(dialogForm());
+                iTag('translation for "' + str.key + '":').appendTo(dialogForm());
                 textarea(
-                    key,
+                    'translation_' + key,
                     str.translation || str.key
+                ).appendTo(dialogForm());
+                iTag('context description:').appendTo(dialogForm());
+                textarea(
+                    'description_' + key,
+                    str.description || ''
                 ).appendTo(dialogForm());
             }
         );
@@ -135,9 +140,21 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
     }
 
     function writeTranslations(a) {
-        var i;
+        var i, strings = {}, id, propertyName;
         for (i=0; i < a.length; i++) {
-            dbDriver.updateSingleTranslation(locale, a[i].name, a[i].value.replace(/\r/gm, ''));
+            id = a[i].name.split('_')[1];
+            propertyName = a[i].name.split('_')[0];
+            if (!strings[id]) {
+                strings[id] = {};
+            }
+            strings[id][propertyName] = a[i].value;
+        }
+        for (id in strings) {
+            if (strings.hasOwnProperty(id)) {
+                dbDriver.updateSingleTranslation(
+                    locale, id, strings[id].translation.replace(/\r/gm, ''), strings[id].description
+                );
+            }
         }
     }
 

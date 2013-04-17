@@ -40,11 +40,16 @@ describe('dialog', function() {
             dialog = (new MuzzyTranslator('de_CH', driver)).t.dialog;
 
         dialog.t.writeTranslations(
-            [{name: '123456', value: 'translated'},{name: '45234', value: 'translated too'}]
+            [
+                {name: 'translation_123456', value: 'translated'},
+                {name: 'description_123456', value: 'context described'},
+                {name: 'translation_45234', value: 'translated too'},
+                {name: 'description_45234', value: 'another context'}
+            ]
         );
 
-        expect(driver.updateSingleTranslation).toHaveBeenCalledWith('de_CH', '123456', 'translated');
-        expect(driver.updateSingleTranslation).toHaveBeenCalledWith('de_CH', '45234', 'translated too');
+        expect(driver.updateSingleTranslation).toHaveBeenCalledWith('de_CH', '123456', 'translated', 'context described');
+        expect(driver.updateSingleTranslation).toHaveBeenCalledWith('de_CH', '45234', 'translated too', 'another context');
     });
 
     it('ignores unknown translations', function() {
@@ -73,9 +78,9 @@ describe('dialog', function() {
             dialog = (new MuzzyTranslator('nl_NL', driver)).t.dialog;
 
         dialog.t.writeTranslations(
-            [{name: '8512ae7d57b1396273f76fe6ed341a23', value: "Taal\r\nhehe"}]
+            [{name: 'translation_8512ae7d57b1396273f76fe6ed341a23', value: "Taal\r\nhehe"}]
         );
 
-        expect(driver.updateSingleTranslation).toHaveBeenCalledWith('nl_NL', '8512ae7d57b1396273f76fe6ed341a23', "Taal\nhehe");
+        expect(driver.updateSingleTranslation).toHaveBeenCalledWith('nl_NL', '8512ae7d57b1396273f76fe6ed341a23', "Taal\nhehe", undefined);
     });
 });
