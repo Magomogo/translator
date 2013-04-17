@@ -98,16 +98,18 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
         $.each(
             stringObjects,
             function (key, str) {
-                iTag('translation for "' + str.key + '":').appendTo(dialogForm());
+                var div = $('<div/>');
+                iTag('translation for "' + str.key + '":').appendTo(div);
                 textarea(
                     'translation_' + key,
                     str.translation || str.key
-                ).appendTo(dialogForm());
-                iTag('context description:').appendTo(dialogForm());
+                ).appendTo(div);
+                iTag('context description:').appendTo(div);
                 textarea(
                     'description_' + key,
                     str.description || ''
-                ).appendTo(dialogForm());
+                ).appendTo(div);
+                div.appendTo(dialogForm());
             }
         );
 

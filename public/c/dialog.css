@@ -2,4 +2,6 @@ textarea {width:100%;}
 input {width:100%;}
 #translateDialogContainer,
 #unknownTranslationNotice {display:none}
+#translateDialogContainer {padding: 0; margin: 0}
 #translateDialogContainer i {font-size: 16px; padding-top: 10px;}
+#translateDialogContainer form > div {padding: 10px;}
