@@ -64,5 +64,18 @@ describe('dialog', function() {
                 id2: {key: 'Something'}
             });
         });
-    })
+    });
+
+    it('removes windows CR from translation', function() {
+        var driver = {
+                updateSingleTranslation: jasmine.createSpy()
+            },
+            dialog = (new MuzzyTranslator('nl_NL', driver)).t.dialog;
+
+        dialog.t.writeTranslations(
+            [{name: '8512ae7d57b1396273f76fe6ed341a23', value: "Taal\r\nhehe"}]
+        );
+
+        expect(driver.updateSingleTranslation).toHaveBeenCalledWith('nl_NL', '8512ae7d57b1396273f76fe6ed341a23', "Taal\nhehe");
+    });
 });

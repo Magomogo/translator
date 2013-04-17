@@ -137,7 +137,7 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
     function writeTranslations(a) {
         var i;
         for (i=0; i < a.length; i++) {
-            dbDriver.updateSingleTranslation(locale, a[i].name, a[i].value);
+            dbDriver.updateSingleTranslation(locale, a[i].name, a[i].value.replace(/\r/gm, ''));
         }
     }
 
