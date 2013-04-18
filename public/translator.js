@@ -99,7 +99,11 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
             stringObjects,
             function (key, str) {
                 var div = $('<div/>');
-                iTag('translation for "' + str.key + '":').appendTo(div);
+                iTag(
+                    'translation for <b>"'
+                        + (str.namespace && str.namespace.length ? str.namespace.join('/') + ':' : '')
+                        + str.key + '"</b>:'
+                ).appendTo(div);
                 textarea(
                     'translation_' + key,
                     str.translation || str.key
