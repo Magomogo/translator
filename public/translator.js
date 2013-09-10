@@ -53,17 +53,18 @@ MuzzyTranslator.prototype.dialog = function($, locale, dbDriver) {
                     o[id] = data;
 
                     if ($.map(o, function () { return 1;}).length === ids.length) {
-                        doneCallback(filterUnknownTranslations(o));
+                        doneCallback(filterUnknownTranslationsAndSortInIdsOrder(o, ids));
                     }
                 });
             }
         );
     }
 
-    function filterUnknownTranslations(o) {
-        var filtered = {}, id;
+    function filterUnknownTranslationsAndSortInIdsOrder(o, sortedIds) {
+        var filtered = {}, id, i;
 
-        for (id in o) {
+        for (i=0; i<sortedIds.length; i++) {
+            id = sortedIds[i];
             if (o.hasOwnProperty(id) && o[id].key) {
                 filtered[id] = o[id];
             }
