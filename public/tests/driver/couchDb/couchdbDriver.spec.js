@@ -3,6 +3,7 @@ describe('couchdbDriver', function() {
     var locale = 'de_CH',
         namespace = 'math',
         localizedStringObject = {
+            _id: 'uuid-1234ac33',
             key: 'one',
             translation: 'Eins',
             namespace: ['math', 'numbers']
@@ -47,7 +48,7 @@ describe('couchdbDriver', function() {
                 'readSingleTranslation',
                 [locale, '1234567890']
             ).get
-        ).toEqual('couchdb/de_ch/1234567890');
+        ).toEqual('couchdb/de_ch/_design/main/_view/find?key="1234567890"');
     });
 
 //--------------------------------------------------------------------------------------------------
@@ -90,15 +91,15 @@ describe('couchdbDriver', function() {
             get: function(uri, successCallback){
                 getUri = uri;
                 putUri = null;
-                successCallback(localizedStringObject);
+                successCallback({rows: [ {value: localizedStringObject } ]});
             },
             put: function(uri, data){
                 putUri = uri;
             }
         }).updateSingleTranslation(locale, 'e242ff', 'eins');
 
-        expect(getUri).toEqual('couchdb/de_ch/e242ff');
-        expect(putUri).toEqual('couchdb/de_ch/e242ff');
+        expect(getUri).toEqual('couchdb/de_ch/_design/main/_view/find?key="e242ff"');
+        expect(putUri).toEqual('couchdb/de_ch/uuid-1234ac33');
     });
 
 //--------------------------------------------------------------------------------------------------
@@ -149,7 +150,7 @@ describe('couchdbDriver', function() {
         var actualData = {};
         mockedDriver({
             get: function(uri, successCallback){
-                successCallback(localizedStringObject);
+                successCallback({rows: [ {value: localizedStringObject } ]});
             },
             put: function(uri, data){
                 actualData = data;
@@ -157,6 +158,7 @@ describe('couchdbDriver', function() {
         }).updateSingleTranslation(locale, 'e242ff', 'eins', 'A number');
 
         expect(actualData).toEqual({
+            _id : 'uuid-1234ac33',
             key: 'one',
             translation: 'eins',
             description: 'A number',

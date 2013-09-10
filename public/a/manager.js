@@ -9,13 +9,13 @@ function MuzzyTranslationsManager(locale, dbDriver) {
         return $('<option/>').attr({value: value}).append(displayed);
     }
 
-    function stringControl(id, key, translation) {
+    function stringControl(hash, key, translation) {
         return $('<dl/>').append(
             $('<dt/>').append(key)
         ).append(
             $('<dd/>').append(
                 $('<textarea/>')
-                    .attr({name: id})
+                    .attr({name: hash})
                     .html(translation)
                     .bind('keydown', function () {
                         $(this).siblings('input').show();
@@ -24,7 +24,7 @@ function MuzzyTranslationsManager(locale, dbDriver) {
                 $('<input/>')
                     .attr({type: 'button', value: 'save'}).css({display: 'none'})
                     .bind('click', function () {
-                        dbDriver.updateSingleTranslation(locale, id, $(this).siblings('textarea').val());
+                        dbDriver.updateSingleTranslation(locale, hash, $(this).siblings('textarea').val());
                         $(this).hide();
                     })
             )
@@ -55,7 +55,7 @@ function MuzzyTranslationsManager(locale, dbDriver) {
                 for (i = 0; i < data.length; i++) {
                     ul.append(
                         stringControl(
-                            data[i].id,
+                            data[i].hash,
                             data[i].key,
                             data[i].translation
                         )

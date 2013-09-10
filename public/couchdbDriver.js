@@ -58,11 +58,11 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
                        '/' + encodeURIComponent(id);
     }
 
-    function readLocalizedStringObject(locale, id, successCallback) {
+    function readLocalizedStringObject(locale, hash, successCallback) {
         restInterface.get(
-            createPath(locale, id),
+            createPath(locale, '_design') + '/main/_view/find?key="' + hash + '"',
             function(data) {
-                successCallback(localizedstringStringSchema(data));
+                successCallback(localizedstringStringSchema(data.rows[0].value));
             },
             function(){
                 successCallback(localizedstringStringSchema({}));
@@ -78,13 +78,13 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
         deleteTranslations: function (locale) {
             restInterface.del('couchdb/' + locale.toLowerCase());
         },
-        updateSingleTranslation: function(locale, id, translation, description) {
-            readLocalizedStringObject(locale, id, function(str){
+        updateSingleTranslation: function(locale, hash, translation, description) {
+            readLocalizedStringObject(locale, hash, function(str){
                 str.translation = translation;
                 if (description) {
                     str.description = description;
                 }
-                restInterface.put(createPath(locale, id), str);
+                restInterface.put(createPath(locale, str._id), str);
             });
         },
         readNamespaces: function(locale, successCallback) {
@@ -104,17 +104,16 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
                 createPath(locale, '_design') + '/main/_view/translations?key="' + (namespace || '') + '"',
                 function(data) {
                     var objects=[], i, o;
-                    for(i=0; i< data.rows.length; i++) {
+                    for (i=0; i< data.rows.length; i++) {
                         o = localizedstringStringSchema(data.rows[i].value);
-                        o.id = data.rows[i].id;
                         objects.push(o);
                     }
                     if (successCallback) successCallback(objects);
                 }
             );
         },
-        readSingleTranslation: function(locale, id, successCallback) {
-            readLocalizedStringObject(locale, id, successCallback);
+        readSingleTranslation: function(locale, hash, successCallback) {
+            readLocalizedStringObject(locale, hash, successCallback);
         },
         listLocales: function(successCallback) {
             restInterface.get('couchdb/_all_dbs', function(data) {
