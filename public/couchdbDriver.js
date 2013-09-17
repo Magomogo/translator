@@ -62,7 +62,7 @@ MuzzyTranslatorCouchDbDriver.prototype.translateInterface = function($, restInte
         restInterface.get(
             createPath(locale, '_design') + '/main/_view/find?key="' + hash + '"',
             function(data) {
-                successCallback(localizedstringStringSchema(data.rows[0].value));
+                successCallback(localizedstringStringSchema(data.rows.length ? data.rows[0].value : {}));
             },
             function(){
                 successCallback(localizedstringStringSchema({}));
