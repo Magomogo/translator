@@ -55,12 +55,12 @@ describe('keysStorage', function() {
     });
 
     it('registers parent as anchor for invisible element', function() {
-        attachToBodyVisibleDiv('<select><option>123</option></select>');
+        attachToBodyVisibleDiv('<i>i\'m visible!<span style="display:none">123</span></i>');
 
-        storage.register($('option', testElement()).get(0), 'key1');
+        storage.register($('span', testElement()).get(0), 'key1');
 
         expect(storage.keys).toEqual([
-            {anchor: $('select', testElement()).get(0), keys: ['key1']}
+            {anchor: $('i', testElement()).get(0), keys: ['key1']}
         ]);
 
     });
