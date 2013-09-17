@@ -73,7 +73,7 @@ describe('keysFinder', function() {
 
         (new MuzzyTranslator()).t.keysFinder.removeMarkUp(el);
 
-        expect(el.innerHTML).toEqual(sB + translation() + sE);
+        expect(el.innerHTML).toEqual(sE + translation() + sE);
     });
 
     it('removes translation markUp from attributes', function() {
@@ -86,6 +86,15 @@ describe('keysFinder', function() {
             }
         );
 
-        expect(el.innerHTML).toEqual('<img alt="' + sB + translation() + sE + '" title="' + sB + translation() + sE + '">');
+        expect(el.innerHTML).toEqual('<img alt="' + sE + translation() + sE + '" title="' + sE + translation() + sE + '">');
+    });
+
+    it('works with this particular string correctly', function() {
+        var html = '<h5>‘60562ddb6d946ce45445fb8ca44d7bd1’Friburgo: una región, tres caras’</h5>',
+            el = jQuery(html).get(0);
+
+        (new MuzzyTranslator()).t.keysFinder.removeMarkUp(el);
+
+        expect(el.innerHTML).toBe('’Friburgo: una región, tres caras’');
     });
 });

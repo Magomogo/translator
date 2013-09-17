@@ -225,10 +225,10 @@ MuzzyTranslator.prototype.keysFinder = function ($, keysStorage) {
         removeMarkUp: function(el) {
             everyTranslationInChildTextNodes(el, function(childNode) {
                 childNode.textContent = childNode.textContent
-                    .replace(keyRegexp, '\u2018');
+                    .replace(keyRegexp, '\u2019');
             });
             everyTranslationInAttributes(el, function(attribute, key) {
-                attribute.value = attribute.value.replace(keyRegexp, '\u2018');
+                attribute.value = attribute.value.replace(keyRegexp, '\u2019');
             });
         }
     };
