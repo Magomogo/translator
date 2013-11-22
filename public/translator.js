@@ -7,8 +7,11 @@ function MuzzyTranslator(locale, options, dbDriver, deps) {
         deps = {};
     }
 
-    var di = deps.dialog || this.dialog(jQuery, locale, dbDriver),
-        ks = deps.keysStorage || this.keysStorage(jQuery),
+    var options = options || {
+            stickHandlersToClosestVisibleParent: true
+        },
+        di = deps.dialog || this.dialog(jQuery, locale, dbDriver),
+        ks = deps.keysStorage || this.keysStorage(jQuery, options.stickHandlersToClosestVisibleParent),
         kf = deps.keysFinder || this.keysFinder(jQuery, ks),
         ha = deps.handler || this.handler(jQuery, di);
 
@@ -234,30 +237,24 @@ MuzzyTranslator.prototype.keysFinder = function ($, keysStorage) {
     };
 };
 
-MuzzyTranslator.prototype.keysStorage = function($) {
+MuzzyTranslator.prototype.keysStorage = function($, stickHandlersToClosestVisibleParent) {
     "use strict";
 
     var keys = [];
 
-    function registeredAnchorIdx(el) {
-        var i;
-
-        for (i in keys) {
-            if (keys.hasOwnProperty(i) && (keys[i].anchor === el)) {
-                return i;
-            }
-        }
-        return undefined;
-    }
-
-    function selectBestContainerInDOM($el) {
+    function selectBestAnchorInDOM($el) {
 
         if ($el.is(':hidden')) {
-            $el = $el.closest(':visible');
-        }
 
-        if (['body', 'head', 'html'].indexOf($el.get(0).tagName.toLowerCase()) !== -1) {
-            return $('body', parent.document);
+            if (!$el.parents('body').length) {
+                return $('body', parent.document);
+            }
+
+            if (stickHandlersToClosestVisibleParent) {
+                $el = $el.closest(':visible');
+            } else if ($el.parents('select').length) {
+                return $el.closest('select');
+            }
         }
 
         if ($el.is('li,th,td,dd,dl')) {
@@ -272,10 +269,19 @@ MuzzyTranslator.prototype.keysStorage = function($) {
         return $el;
     }
 
+    function elementHavingSameParentIndex(parent) {
+        for (var i in keys) {
+            if (keys.hasOwnProperty(i) && (keys[i].anchor.parentElement === parent)) {
+                return i;
+            }
+        }
+        return undefined;
+    }
+
     return {
         register: function (el, key) {
-            var $el = selectBestContainerInDOM($(el)),
-                i = registeredAnchorIdx($el.get(0));
+            var $el = selectBestAnchorInDOM($(el)),
+                i = elementHavingSameParentIndex($el.parent().get(0));
 
             if (i) {
                 if (keys[i].keys.indexOf(key) === -1) {
