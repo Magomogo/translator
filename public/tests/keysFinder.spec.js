@@ -24,7 +24,7 @@ describe('keysFinder', function() {
             keysStorageMock = {
                 register: function(parent, key){result.push(key);}
             },
-            finder = new MuzzyTranslator('de', {}, {keysStorage: keysStorageMock}).t.keysFinder;
+            finder = new MuzzyTranslator('de', {}, null, {keysStorage: keysStorageMock}).t.keysFinder;
 
         jQuery('*', dom).each(
             function(){
@@ -41,7 +41,7 @@ describe('keysFinder', function() {
             register: jasmine.createSpy()
         };
 
-        (new MuzzyTranslator('de', {}, {keysStorage: storageMock})).t.keysFinder.testElement(
+        (new MuzzyTranslator('de', {}, null, {keysStorage: storageMock})).t.keysFinder.testElement(
             domElement(tPair())
         );
 

@@ -23,7 +23,7 @@ describe('dialog', function() {
                     successCallback({key: key});
                 }
             },
-            dialog = (new MuzzyTranslator('de_CH', driver)).t.dialog;
+            dialog = (new MuzzyTranslator('de_CH', {}, driver)).t.dialog;
 
         dialog.t.readStringObjects(['key1', 'key2'], function(o) {
             expect(o).toEqual({
@@ -37,7 +37,7 @@ describe('dialog', function() {
         var driver = {
                 updateSingleTranslation: jasmine.createSpy()
             },
-            dialog = (new MuzzyTranslator('de_CH', driver)).t.dialog;
+            dialog = (new MuzzyTranslator('de_CH', {}, driver)).t.dialog;
 
         dialog.t.writeTranslations(
             [
@@ -62,7 +62,7 @@ describe('dialog', function() {
                     }
                 }
             },
-            dialog = (new MuzzyTranslator('de_CH', driver)).t.dialog;
+            dialog = (new MuzzyTranslator('de_CH', {}, driver)).t.dialog;
 
         dialog.t.readStringObjects(['id1', 'id2'], function(o) {
             expect(o).toEqual({
@@ -75,7 +75,7 @@ describe('dialog', function() {
         var driver = {
                 updateSingleTranslation: jasmine.createSpy()
             },
-            dialog = (new MuzzyTranslator('nl_NL', driver)).t.dialog;
+            dialog = (new MuzzyTranslator('nl_NL', {}, driver)).t.dialog;
 
         dialog.t.writeTranslations(
             [{name: 'translation_8512ae7d57b1396273f76fe6ed341a23', value: "Taal\r\nhehe"}]

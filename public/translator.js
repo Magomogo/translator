@@ -1,6 +1,6 @@
 /*global jQuery*/
 
-function MuzzyTranslator(locale, dbDriver, deps) {
+function MuzzyTranslator(locale, options, dbDriver, deps) {
     "use strict";
 
     if (undefined === deps) {

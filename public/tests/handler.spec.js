@@ -18,7 +18,7 @@ describe('handler', function() {
 //--------------------------------------------------------------------------------------------------
 
     it('attaches link before provided anchor', function() {
-        var handler = new MuzzyTranslator('de', '/').t.handler;
+        var handler = new MuzzyTranslator('de').t.handler;
 
         handler.install(anchor, []);
         expect(installedHandle().length).toEqual(1);
@@ -28,7 +28,7 @@ describe('handler', function() {
         var dialogStub = {
                 popUp: jasmine.createSpy()
             },
-            handler = new MuzzyTranslator('de', {}, {dialog: dialogStub}).t.handler;
+            handler = new MuzzyTranslator('de', {}, null, {dialog: dialogStub}).t.handler;
 
         handler.install(anchor, ['12345']);
 
