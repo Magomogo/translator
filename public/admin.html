@@ -5,19 +5,53 @@
 <script type="text/javascript" src="couchdbDriver.js"></script>
 <script type="text/javascript" src="a/manager.js"></script>
 <link rel="stylesheet" type="text/css" href="a/manager.css">
+
 <script>
-    $(document).ready(function() {
-        (new MuzzyTranslationsManager('ru_ru', new MuzzyTranslatorCouchDbDriver()))
-                .loadPageList($('#namespace'), $('#pageTranslations'));
-    })
+    function getParam(name) {
+        'use strict';
+
+        var regex,
+            results;
+
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+
+        return (
+            (results == null) ? undefined : decodeURIComponent(results[1].replace(/\+/g, " "))
+        );
+    }
+
+    if (getParam('locale')) {
+        $(document).ready(function () {
+            (new MuzzyTranslationsManager(
+                'translations_' + getParam('locale').toLocaleLowerCase(),
+                new MuzzyTranslatorCouchDbDriver()
+            )).loadPageList($('#namespace'), $('#pageTranslations'));
+        });
+    }
 </script>
 </head>
+
 <body>
-<h1>Management</h1>
-<dl>
-    <dt>Page list</dt>
-    <dd><select id="namespace"></select></dd>
-</dl>
-<div id="pageTranslations"></div>
+    <h1>Management</h1>
+
+    <p>
+        Choose a locale:
+        <a href="?locale=de_CH">[de_CH]</a>
+        <a href="?locale=en_US">[en_US]</a>
+        <a href="?locale=es_ES">[es_ES]</a>
+        <a href="?locale=fr_FR">[fr_FR]</a>
+        <a href="?locale=it_IT">[it_IT]</a>
+        <a href="?locale=nl_NL">[nl_NL]</a>
+        <a href="?locale=ru_RU">[ru_RU]</a>
+    </p>
+
+    <dl>
+        <dt>Page list</dt>
+        <dd><select id="namespace"></select></dd>
+    </dl>
+
+    <div id="pageTranslations"></div>
 </body>
 </html>
